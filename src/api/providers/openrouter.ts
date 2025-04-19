@@ -215,7 +215,15 @@ export async function getOpenRouterModels(options?: ApiHandlerOptions) {
 
 	try {
 		const response = await axios.get(`${baseURL}/models`)
-		const rawModels = response.data.data
+		let rawModels = response.data.data
+
+		// Filter models by the specific provider if set
+		if (
+			options?.openRouterSpecificProvider &&
+			options.openRouterSpecificProvider !== OPENROUTER_DEFAULT_PROVIDER_NAME
+		) {
+			rawModels = rawModels.filter((model: any) => model.id.startsWith(`${options.openRouterSpecificProvider}/`))
+		}
 
 		for (const rawModel of rawModels) {
 			const modelInfo: ModelInfo = {
